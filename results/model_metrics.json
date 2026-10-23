@@ -1,0 +1,165 @@
+{
+  "evaluated_rows": 1062,
+  "total_rows": 1120,
+  "censored_rows_excluded": 58,
+  "censored_rate": 0.0518,
+  "metrics": {
+    "baseline_last_week": {
+      "MAE": 24.6761,
+      "RMSE": 48.0778,
+      "MAPE_%": 73.3659,
+      "WMAPE_%": 45.7459,
+      "n_samples": 1062,
+      "n_zero_actual": 56
+    },
+    "baseline_ma_7": {
+      "MAE": 18.7961,
+      "RMSE": 35.4652,
+      "MAPE_%": 53.5836,
+      "WMAPE_%": 34.8452,
+      "n_samples": 1062,
+      "n_zero_actual": 56
+    },
+    "model": {
+      "MAE": 10.3147,
+      "RMSE": 17.7343,
+      "MAPE_%": 35.6908,
+      "WMAPE_%": 19.1219,
+      "n_samples": 1062,
+      "n_zero_actual": 56
+    }
+  },
+  "by_pattern": {
+    "longtail": {
+      "baseline_last_week": {
+        "MAE": 2.8812,
+        "RMSE": 5.1461,
+        "MAPE_%": 126.3602,
+        "WMAPE_%": 117.5,
+        "n_samples": 261,
+        "n_zero_actual": 56
+      },
+      "baseline_ma_7": {
+        "MAE": 2.0181,
+        "RMSE": 3.1409,
+        "MAPE_%": 76.3599,
+        "WMAPE_%": 82.2991,
+        "n_samples": 261,
+        "n_zero_actual": 56
+      },
+      "model": {
+        "MAE": 2.0086,
+        "RMSE": 3.1813,
+        "MAPE_%": 72.8936,
+        "WMAPE_%": 81.9135,
+        "n_samples": 261,
+        "n_zero_actual": 56
+      }
+    },
+    "promo": {
+      "baseline_last_week": {
+        "MAE": 47.2394,
+        "RMSE": 76.4548,
+        "MAPE_%": 117.7462,
+        "WMAPE_%": 87.6244,
+        "n_samples": 259,
+        "n_zero_actual": 0
+      },
+      "baseline_ma_7": {
+        "MAE": 35.9901,
+        "RMSE": 53.9874,
+        "MAPE_%": 95.5634,
+        "WMAPE_%": 66.7581,
+        "n_samples": 259,
+        "n_zero_actual": 0
+      },
+      "model": {
+        "MAE": 18.6196,
+        "RMSE": 29.677,
+        "MAPE_%": 48.4345,
+        "WMAPE_%": 34.5375,
+        "n_samples": 259,
+        "n_zero_actual": 0
+      }
+    },
+    "seasonal": {
+      "baseline_last_week": {
+        "MAE": 27.0109,
+        "RMSE": 39.1761,
+        "MAPE_%": 41.9558,
+        "WMAPE_%": 41.2542,
+        "n_samples": 274,
+        "n_zero_actual": 0
+      },
+      "baseline_ma_7": {
+        "MAE": 22.4854,
+        "RMSE": 34.3462,
+        "MAPE_%": 35.0558,
+        "WMAPE_%": 34.3423,
+        "n_samples": 274,
+        "n_zero_actual": 0
+      },
+      "model": {
+        "MAE": 11.7151,
+        "RMSE": 15.4021,
+        "MAPE_%": 20.4415,
+        "WMAPE_%": 17.8926,
+        "n_samples": 274,
+        "n_zero_actual": 0
+      }
+    },
+    "stable": {
+      "baseline_last_week": {
+        "MAE": 21.709,
+        "RMSE": 43.7684,
+        "MAPE_%": 22.0525,
+        "WMAPE_%": 23.5137,
+        "n_samples": 268,
+        "n_zero_actual": 0
+      },
+      "baseline_ma_7": {
+        "MAE": 14.7473,
+        "RMSE": 30.8508,
+        "MAPE_%": 14.5342,
+        "WMAPE_%": 15.9733,
+        "n_samples": 268,
+        "n_zero_actual": 0
+      },
+      "model": {
+        "MAE": 8.946,
+        "RMSE": 11.9474,
+        "MAPE_%": 10.5083,
+        "WMAPE_%": 9.6897,
+        "n_samples": 268,
+        "n_zero_actual": 0
+      }
+    }
+  },
+  "also_on_all_test_rows": {
+    "baseline_last_week": {
+      "MAE": 26.8411,
+      "RMSE": 52.7731,
+      "MAPE_%": 73.512,
+      "WMAPE_%": 50.156,
+      "n_samples": 1120,
+      "n_zero_actual": 93
+    },
+    "baseline_ma_7": {
+      "MAE": 21.8216,
+      "RMSE": 42.4332,
+      "MAPE_%": 53.6946,
+      "WMAPE_%": 40.7764,
+      "n_samples": 1120,
+      "n_zero_actual": 93
+    },
+    "model": {
+      "MAE": 12.5692,
+      "RMSE": 24.4102,
+      "MAPE_%": 37.5506,
+      "WMAPE_%": 23.4872,
+      "n_samples": 1120,
+      "n_zero_actual": 93
+    }
+  },
+  "note": "主指标只在实际未被断货截断的测试行上计算；also_on_all_test_rows 是把断货行也算进去的口径，会系统性低估实际需求，仅作对照。MAPE 剔除真实值为 0 的样本。"
+}

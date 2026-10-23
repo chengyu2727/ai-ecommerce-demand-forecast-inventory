@@ -1,0 +1,38 @@
+# ---------------- Python ----------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# 虚拟环境
+.venv/
+venv/
+env/
+
+# ---------------- 数据与产出 ----------------
+# 中间数据（原始/清洗/特征）由代码生成，体积大且可完全重建，不入库
+data/raw/*.csv
+data/processed/*.csv
+data/processed/*.json
+
+# 结果保留：图表与小表都提交，让人不跑代码也能看到产出（README 直接引用这些图）
+# 只排除模型二进制（约 500KB，可用 python -m src.train 重建）
+results/*.joblib
+
+# 保留目录占位
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!results/.gitkeep
+!results/figures/.gitkeep
+
+# ---------------- Notebook ----------------
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ---------------- 编辑器 / 系统 ----------------
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+~

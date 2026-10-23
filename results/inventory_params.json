@@ -1,0 +1,17 @@
+{
+  "service_level": 0.95,
+  "z_value": 1.6449,
+  "review_period_days": 7,
+  "order_multiple": 1,
+  "demand_window_for_rate": 28,
+  "sigma_method": "验证集残差标准差，向池化标准差方差收缩（权重 0.40）",
+  "formulas": {
+    "safety_stock": "z * sigma_daily * sqrt(lead_time_days)",
+    "reorder_point": "avg_daily_forecast * lead_time_days + safety_stock",
+    "suggested_order_qty": "max(0, avg_daily_forecast*(lead_time+review) + SS - on_hand)，向上取整到起订倍数"
+  },
+  "n_skus": 40,
+  "total_suggested_qty": 20130,
+  "n_need_order_now": 28,
+  "data_as_of": "2026-10-23"
+}

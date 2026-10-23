@@ -1,0 +1,62 @@
+{
+  "model_name": "lightgbm",
+  "backend": "lightgbm",
+  "best_iteration": 178,
+  "random_seed": 42,
+  "n_features": 21,
+  "feature_cols": [
+    "lag_1",
+    "lag_7",
+    "lag_14",
+    "rolling_7_mean",
+    "rolling_7_std",
+    "rolling_14_mean",
+    "rolling_30_mean",
+    "rolling_30_std",
+    "r7_over_r30",
+    "weekday",
+    "month",
+    "day_of_month",
+    "is_weekend",
+    "promo_flag",
+    "promo_days_last_7",
+    "holiday_flag",
+    "price",
+    "price_ratio",
+    "lead_time_days",
+    "sku_code",
+    "category_code"
+  ],
+  "n_train_rows": 4252,
+  "n_valid_rows": 1041,
+  "n_test_rows": 1120,
+  "censored_dropped_train": 188,
+  "split": {
+    "train": [
+      "2026-04-27",
+      "2026-08-29"
+    ],
+    "valid": [
+      "2026-08-30",
+      "2026-09-25"
+    ],
+    "test": [
+      "2026-09-26",
+      "2026-10-23"
+    ],
+    "n_days": {
+      "train": 125,
+      "valid": 27,
+      "test": 28
+    },
+    "rows": {
+      "train": 4440,
+      "test": 1120,
+      "valid": 1080,
+      "warmup": 560
+    },
+    "warmup_rows_moved_out_of_train": 560,
+    "note": "按日期切分，同日期的全部 SKU 属于同一集合；warmup 行不参与训练与评估"
+  },
+  "model_file": "results/model_lgbm.joblib"
+}
