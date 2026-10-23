@@ -1,8 +1,27 @@
 # AI 辅助电商销量预测与库存优化
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![LightGBM](https://img.shields.io/badge/model-LightGBM-2c7fb8)
+![Jupyter](https://img.shields.io/badge/notebook-Jupyter-F37626?logo=jupyter&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
+
+**一句话**：用 LightGBM 做 SKU×日 销量预测，再把预测误差转成安全库存、再订货点与建议补货量。
+
 一个端到端可复现的 **销量预测 → 库存决策** 小型项目：从模拟的 SKU×日 销量数据出发，用 LightGBM 做日销量预测，再用预测误差反推安全库存、再订货点和补货量，最终给出一张可以直接给补货同学看的 `replenishment_table.csv`。
 
 > 当前数据是**模拟数据**（还没有真实业务数据）。项目的重点不是"预测得多准"，而是把**一条正确的、没有信息泄漏的、指标可解释的链路**跑通，并明确标出以后接真实数据要替换哪些地方。
+
+### 30 秒速览
+
+| 项目 | 内容 |
+|---|---|
+| 数据规模 | 40 个 SKU × 180 天 = 7,200 行（4 种需求模式，各 10 个 SKU） |
+| 预测目标 | 次日销量，粒度 = SKU × 日 |
+| 特征 | 21 个：lag1/7/14、rolling7/14/30、weekday、month、促销、节假日、价格等 |
+| 主模型 | LightGBM；按**时间**切分 70/15/15，前 14 天仅作 warmup |
+| 效果 | 测试集 **WMAPE 19.1%**；基线「近 7 天均值」34.8%、「上周同日」45.7% |
+| 库存决策 | 服务水平 95%（z = 1.6449）→ 40 行补货表，其中 28 个 SKU 已跌破再订货点 |
+| 状态 | 模拟数据 + 固定种子，端到端可复现；Portfolio / 学习项目，**非生产系统** |
 
 ---
 
@@ -24,7 +43,9 @@ ai-ecommerce-demand-forecast-inventory/
 │   ├── evaluate.py             MAE / RMSE / MAPE / WMAPE 评估与可视化
 │   └── inventory.py            安全库存 / 再订货点 / 建议补货量
 ├── results/                    所有输出：预测明细、指标 json、补货表、图表
+├── start_jupyter.bat           Windows 一键启动 Jupyter（用 .venv，cwd 自动设为项目根）
 ├── requirements.txt
+├── LICENSE                     MIT
 ├── README.md
 └── .gitignore
 ```
@@ -36,7 +57,7 @@ ai-ecommerce-demand-forecast-inventory/
 | `src/config.py` | 单一配置源。改服务水平、切分比例、模型参数、SKU 数量都只改这里 | — |
 | `src/data_generator.py` | 造数据。四种需求模式（稳定/促销/季节/长尾）+ 马尔可夫促销日历 + 节假日抬升 + **库存仿真制造断货** | `data/raw/sales_daily.csv` |
 | `src/data_prep.py` | 清洗与校验。补连续日历（时序缺行会让 lag 错位）、去重、异常值、打印质量报告 | `data/processed/sales_clean.csv`、`data_quality_report.json` |
-| `src/features.py` | 20 个特征 + 按日期切分 train/valid/test，前 14 天标为 warmup | `data/processed/features.csv`、`split_info.json` |
+| `src/features.py` | 21 个特征 + 按日期切分 train/valid/test，前 14 天标为 warmup | `data/processed/features.csv`、`split_info.json` |
 | `src/train.py` | 训练两个基线 + LightGBM，验证集 early stopping，测试集只评估一次；模型按 LightGBM→XGBoost→sklearn 自动降级 | `forecast_test.csv`、`forecast_valid.csv`、`feature_importance.csv`、`model_lgbm.joblib`、`train_meta.json` |
 | `src/evaluate.py` | 四指标评估、分模式/分 SKU 拆解、四张图 | `model_metrics.json`、`metrics_by_sku.csv`、`figures/*.png` |
 | `src/inventory.py` | SS / ROP / 建议补货量，参数快照落盘 | `replenishment_table.csv`、`inventory_params.json`、`figures/replenishment_top.png` |
@@ -57,6 +78,11 @@ source .venv/bin/activate
 pip install -r requirements.txt
 # 国内网络慢的话加镜像：
 # pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 用 conda / Anaconda 的话，等价写法（依赖仍推荐 pip 装，版本更可控）：
+# conda create -n ecom_forecast python=3.11 -y
+# conda activate ecom_forecast
+# pip install -r requirements.txt
 
 # 2) 按顺序跑（每一步都可以单独跑，也可以重复跑，结果幂等）
 python -m src.data_generator   # 生成 data/raw/sales_daily.csv
@@ -80,11 +106,11 @@ cd ai-ecommerce-demand-forecast-inventory
 .venv\Scripts\jupyter-notebook.exe      # 打开 notebooks/01_eda.ipynb，从上到下执行
 ```
 
-第一个代码单元会先定位项目根，然后打印三行诊断信息：
+第一个代码单元会先定位项目根，然后打印四条诊断信息：
 
 ```
-项目根目录：F:\...\ai-ecommerce-demand-forecast-inventory
-定位方式  ：① 硬编码绝对路径
+项目根目录：...\ai-ecommerce-demand-forecast-inventory
+定位方式  ：② 内核工作目录向上查找
 内核 Python：...\.venv\Scripts\python.exe
 依赖版本  ：pandas 3.1.0 | numpy 2.5.4 | matplotlib 3.11.2
 ```
@@ -325,14 +351,38 @@ Q        = max(0, S - 当前在库) → 向上取到起订倍数   # 建议补�
 4. **单步预测**：只做"明天"的预测，多步预测（未来 7/14 天）目前靠"用未来几天的预测均值"近似，没有递归或直接多步建模。
 5. **没有成本函数**：补货量只按服务水平约束，没有把缺货成本（毛利损失）和持有成本（资金占用）放进目标函数里做权衡。
 
-## 9. 复现性
+## 9. 设计取舍与常见质疑
+
+这一节是给"看完代码还想追问"的人准备的，也是我自己的决策记录。
+
+**Q：为什么不用 Prophet / LSTM / Transformer？**
+样本只有 180 天 × 40 SKU，日粒度噪声大。深度模型在这个样本量上很难稳定超过 GBDT。所以我把门槛设在"能不能打败 MA7"——LightGBM 把 WMAPE 从 34.8% 压到 19.1%，再上复杂模型的边际收益不明确。真要换深度模型，前提是先有更长历史和多源特征（流量、竞品价、站内活动）。
+
+**Q：为什么按时间切分，而不是随机切分？**
+同一 SKU 相邻日高度相关，随机切分会让"未来信息"漏进训练集，指标虚高。这里按日期切 70/15/15，前 14 天只用来构造 `rolling_30`，不参与训练也不参与评估。
+
+**Q：断货为什么只剔除，不做截断需求还原？**
+断货日的 `units_sold` 是需求的截断值（`min(需求, 库存)`），直接学等于把"缺货"学成"需求低"。现在的做法是保守的：训练/验证剔除断货行，评估主指标只算未断货行（断货占 5.2%）。更严谨的是 EM / Tobit / 两阶段模型做需求还原——这是已知短板，写在第 8 节，没有藏起来。
+
+**Q：长尾 SKU 的 WMAPE 82%，算模型失败吗？**
+不算调参问题。EDA 里长尾 SKU 的自相关在所有滞后上都约等于 0，日均 2.2 件、27% 的天数销量为 0，历史值几乎不含信息。这类商品应改用间歇需求方法（Croston、分位数、bootstrap），而不是继续调 GBDT。
+
+**Q：安全库存为什么用正态假设？**
+这是行业标准做法，但不是对所有 SKU 都成立：长尾 SKU 零膨胀，`z × σ` 会偏保守。σ 用单 SKU 残差标准差向池化值做方差收缩（权重 0.4），避免 20 多天样本算出抖动的安全库存。更好的替代是 bootstrap 分位数。
+
+**Q：这些数字能代表真实业务的预期精度吗？**
+不能。这是模拟数据，信噪比是人为设定的。可以拿去讲的是方法论结论——用基线判断 ML 是否真的有用、断货不等于零需求、长尾要换方法——而不是"19.1%"这个数字本身。
+
+---
+
+## 10. 复现性
 
 - 所有随机过程统一从 `config.RANDOM_SEED = 42` 派生，每个 SKU 用独立子种子（加 SKU 不会改变已有 SKU 的数据）；
 - 数据截止日 `ANCHOR_DATE` 固定，保证任何时候跑出来的数据完全一致；
 - LightGBM 开启 `deterministic=True`、`force_row_wise=True`，同机结果稳定；
 - 每次运行都会写 `split_info.json`、`train_meta.json`、`inventory_params.json` 三个参数快照，任何一张结果表都能追溯到口径。
 
-## 10. 许可
+## 11. 许可
 
 [MIT License](LICENSE) © 2026 Chen YuFei
 
